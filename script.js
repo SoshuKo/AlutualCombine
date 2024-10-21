@@ -1,143 +1,187 @@
-// 母音の置換ルール
-const femaleVowelReplacements = { 'a': 'e', 'ï': 'i', 'o': 'ö', 'u': 'ü' };
-const maleVowelReplacements = { 'e': 'a', 'i': 'ï', 'ö': 'o', 'ü': 'u' };
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('generate').addEventListener('click', generateCompoundWord);
+    document.getElementById('clear').addEventListener('click', clearInput);
+});
 
-// 母音置換関数
-function replaceVowels(word, gender) {
-    let replacements = gender === 'female' ? femaleVowelReplacements : maleVowelReplacements;
-    return word.split('').map(char => replacements[char] || char).join('');
-}
+function generateCompoundWord() {
+    const wordA = document.getElementById('wordA').value.trim();
+    const wordB = document.getElementById('wordB').value.trim();
+    const type = document.getElementById('type').value;
+    const aspect = document.getElementById('aspect').value;
+    const plural = document.getElementById('plural').checked;
+    const oneWord = document.getElementById('oneWord').checked;
 
-// 名詞+名詞 の処理
-function processNounNoun(wordA, wordB, plural) {
-    let finalVowels = ['e', 'i', 'ö', 'ü'];
-    let maleVowelInWordB = wordB.match(/[aïou]/);
+    let generatedWord = '';
+    let warningMessage = '';
 
-    if (finalVowels.some(vowel => wordB.includes(vowel))) {
-        wordA = replaceVowels(wordA, 'female');
+    // 男性母音の置換関数
+    function maleVowelReplacement(word) {
+        return word.replace(/e/g, 'a').replace(/i/g, 'ï').replace(/ö/g, 'o').replace(/ü/g, 'u');
+    }
+
+    // 女性母音の置換関数
+    function femaleVowelReplacement(word) {
+        return word.replace(/a/g, 'e').replace(/ï/g, 'i').replace(/o/g, 'ö').replace(/u/g, 'ü');
+    }
+
+    if (type === 'noun+noun') {
+        if (!plural) {
+            if (/[e,i,ö,ü]/.test(wordB)) {
+                generatedWord = femaleVowelReplacement(wordA);
+                if (/m$|n$|l$|ng$/.test(wordA)) {
+                    generatedWord += 'e';
+                } else {
+                    generatedWord += 'ne';
+                }
+            }
+            if (/[a,ï,o,u]/.test(wordB)) {
+                generatedWord = maleVowelReplacement(wordA);
+                if (/m$|n$|l$|ng$/.test(wordA)) {
+                    generatedWord += 'a';
+                } else {
+                    generatedWord += 'na';
+                }
+            }
+        } else {
+            if (/[e,i,ö,ü]/.test(wordB)) {
+                generatedWord = femaleVowelReplacement(wordA);
+                if (/m$|n$|l$|ng$/.test(wordA)) {
+                    generatedWord += 'en';
+                } else {
+                    generatedWord += 'nen';
+                }
+            }
+            if (/[a,ï,o,u]/.test(wordB)) {
+                generatedWord = maleVowelReplacement(wordA);
+                if (/m$|n$|l$|ng$/.test(wordA)) {
+                    generatedWord += 'an';
+                } else {
+                    generatedWord += 'nan';
+                }
+            }
+        }
+    } else if (type === 'adj/auto+noun') {
+        if (aspect === 'incomplete') {
+            if (/[e,i,ö,ü]/.test(wordB)) {
+                generatedWord = femaleVowelReplacement(wordA);
+                generatedWord = generatedWord.replace(/-n$|-an$|-en$/, 'setön');
+            }
+            if (/[a,ï,o,u]/.test(wordB)) {
+                generatedWord = maleVowelReplacement(wordA);
+                generatedWord = generatedWord.replace(/-n$|-an$|-en$/, 'saton');
+            }
+        } else {
+            if (/[e,i,ö,ü]/.test(wordB)) {
+                generatedWord = femaleVowelReplacement(wordA);
+                generatedWord = generatedWord.replace(/-n$|-an$|-en$/, 'seten');
+            }
+            if (/[a,ï,o,u]/.test(wordB)) {
+                generatedWord = maleVowelReplacement(wordA);
+                generatedWord = generatedWord.replace(/-n$|-an$|-en$/, 'satan');
+            }
+        }
+
         if (plural) {
-            wordA = wordA.match(/[mnlng]$/) ? wordA + 'en' : wordA + 'nen';
-        } else {
-            wordA = wordA.match(/[mnlng]$/) ? wordA + 'e' : wordA + 'ne';
+            if (aspect === 'incomplete') {
+                if (/[e,i,ö,ü]/.test(wordB)) {
+                    generatedWord = femaleVowelReplacement(wordA);
+                    generatedWord = generatedWord.replace(/-n$|-an$|-en$/, 'seltön');
+                }
+                if (/[a,ï,o,u]/.test(wordB)) {
+                    generatedWord = maleVowelReplacement(wordA);
+                    generatedWord = generatedWord.replace(/-n$|-an$|-en$/, 'salton');
+                }
+            } else {
+                if (/[e,i,ö,ü]/.test(wordB)) {
+                    generatedWord = femaleVowelReplacement(wordA);
+                    generatedWord = generatedWord.replace(/-n$|-an$|-en$/, 'selten');
+                }
+                if (/[a,ï,o,u]/.test(wordB)) {
+                    generatedWord = maleVowelReplacement(wordA);
+                    generatedWord = generatedWord.replace(/-n$|-an$|-en$/, 'saltan');
+                }
+            }
         }
-    } else if (maleVowelInWordB) {
-        wordA = replaceVowels(wordA, 'male');
+    } else if (type === 'trans+noun') {
+        if (aspect === 'incomplete') {
+            if (/[e,i,ö,ü]/.test(wordB)) {
+                generatedWord = femaleVowelReplacement(wordA);
+                generatedWord = generatedWord.replace(/-l$|-al$|-el$/, 'sitön');
+            }
+            if (/[a,ï,o,u]/.test(wordB)) {
+                generatedWord = maleVowelReplacement(wordA);
+                generatedWord = generatedWord.replace(/-l$|-al$|-el$/, 'sïton');
+            }
+        } else {
+            if (/[e,i,ö,ü]/.test(wordB)) {
+                generatedWord = femaleVowelReplacement(wordA);
+                generatedWord = generatedWord.replace(/-l$|-al$|-el$/, 'siten');
+            }
+            if (/[a,ï,o,u]/.test(wordB)) {
+                generatedWord = maleVowelReplacement(wordA);
+                generatedWord = generatedWord.replace(/-l$|-al$|-el$/, 'sïtan');
+            }
+        }
+
         if (plural) {
-            wordA = wordA.match(/[mnlng]$/) ? wordA + 'an' : wordA + 'nan';
-        } else {
-            wordA = wordA.match(/[mnlng]$/) ? wordA + 'a' : wordA + 'na';
+            if (aspect === 'incomplete') {
+                if (/[e,i,ö,ü]/.test(wordB)) {
+                    generatedWord = femaleVowelReplacement(wordA);
+                    generatedWord = generatedWord.replace(/-l$|-al$|-el$/, 'siltön');
+                }
+                if (/[a,ï,o,u]/.test(wordB)) {
+                    generatedWord = maleVowelReplacement(wordA);
+                    generatedWord = generatedWord.replace(/-l$|-al$|-el$/, 'sïlton');
+                }
+            } else {
+                if (/[e,i,ö,ü]/.test(wordB)) {
+                    generatedWord = femaleVowelReplacement(wordA);
+                    generatedWord = generatedWord.replace(/-l$|-al$|-el$/, 'silten');
+                }
+                if (/[a,ï,o,u]/.test(wordB)) {
+                    generatedWord = maleVowelReplacement(wordA);
+                    generatedWord = generatedWord.replace(/-l$|-al$|-el$/, 'sïltan');
+                }
+            }
         }
     }
-    return wordA;
-}
 
-// 形容詞/自動詞分詞 + 名詞 の処理
-function convertEndingAdjective(wordA, wordB, aspect, plural) {
-    let finalVowels = ['e', 'i', 'ö', 'ü'];
-    let maleVowelInWordB = wordB.match(/[aïou]/);
-
-    if (finalVowels.some(vowel => wordB.includes(vowel))) {
-        wordA = replaceVowels(wordA, 'female');
-        if (aspect === '完了相') {
-            wordA = plural ? wordA.replace(/(n|an|en)$/, 'selten') : wordA.replace(/(n|an|en)$/, 'seten');
-        } else {
-            wordA = plural ? wordA.replace(/(n|an|en)$/, 'seltön') : wordA.replace(/(n|an|en)$/, 'setön');
-        }
-    } else if (maleVowelInWordB) {
-        wordA = replaceVowels(wordA, 'male');
-        if (aspect === '完了相') {
-            wordA = plural ? wordA.replace(/(n|an|en)$/, 'saltan') : wordA.replace(/(n|an|en)$/, 'satan');
-        } else {
-            wordA = plural ? wordA.replace(/(n|an|en)$/, 'salton') : wordA.replace(/(n|an|en)$/, 'saton');
-        }
-    }
-    return wordA;
-}
-
-// 他動詞分詞 + 名詞 の処理
-function convertEndingTransitiveVerb(wordA, wordB, aspect, plural) {
-    let finalVowels = ['e', 'i', 'ö', 'ü'];
-    let maleVowelInWordB = wordB.match(/[aïou]/);
-
-    if (finalVowels.some(vowel => wordB.includes(vowel))) {
-        wordA = replaceVowels(wordA, 'female');
-        if (aspect === '完了相') {
-            wordA = plural ? wordA.replace(/(l|al|el)$/, 'silten') : wordA.replace(/(l|al|el)$/, 'siten');
-        } else {
-            wordA = plural ? wordA.replace(/(l|al|el)$/, 'siltön') : wordA.replace(/(l|al|el)$/, 'sitön');
-        }
-    } else if (maleVowelInWordB) {
-        wordA = replaceVowels(wordA, 'male');
-        if (aspect === '完了相') {
-            wordA = plural ? wordA.replace(/(l|al|el)$/, 'sïltan') : wordA.replace(/(l|al|el)$/, 'sïtan');
-        } else {
-            wordA = plural ? wordA.replace(/(l|al|el)$/, 'sïlton') : wordA.replace(/(l|al|el)$/, 'sïton');
-        }
-    }
-    return wordA;
-}
-
-// 複数形の処理
-function processPlural(wordB, plural) {
-    let finalVowels = ['e', 'i', 'ö', 'ü'];
-    let maleVowelInWordB = wordB.match(/[aïou]/);
-
+    // 複数形語尾の設置
     if (plural) {
-        if (finalVowels.some(vowel => wordB.includes(vowel))) {
-            wordB = wordB.match(/[mnlng]$/) ? wordB + 'el' : wordB + 'nel';
-        } else if (maleVowelInWordB) {
-            wordB = wordB.match(/[mnlng]$/) ? wordB + 'al' : wordB + 'nal';
+        if (/[e,i,ö,ü]/.test(wordB)) {
+            if (/m$|n$|l$|ng$/.test(wordB)) {
+                generatedWord += 'el';
+            } else {
+                generatedWord += 'nel';
+            }
+        }
+        if (/[a,ï,o,u]/.test(wordB)) {
+            if (/m$|n$|l$|ng$/.test(wordB)) {
+                generatedWord += 'al';
+            } else {
+                generatedWord += 'nal';
+            }
         }
     }
-    return wordB;
-}
 
-// 入力の処理
-function processInput() {
-    let wordA = document.getElementById('wordA').value;
-    let wordB = document.getElementById('wordB').value;
-    let combinationType = document.getElementById('combinationType').value;
-    let aspect = document.getElementById('aspect').value;
-    let plural = document.getElementById('plural').checked;
-    let oneWord = document.getElementById('oneWord').checked;
-
-    let resultA = wordA;
-    let resultB = wordB;
-
-    if (combinationType === '名詞+名詞') {
-        resultA = processNounNoun(wordA, wordB, plural);
-    } else if (combinationType === '形容詞/自動詞分詞+名詞') {
-        resultA = convertEndingAdjective(wordA, wordB, aspect, plural);
-    } else if (combinationType === '他動詞分詞+名詞') {
-        resultA = convertEndingTransitiveVerb(wordA, wordB, aspect, plural);
+    if (oneWord) {
+        generatedWord = generatedWord.replace(/ /g, '');
     }
 
-    resultB = processPlural(resultB, plural);
-
-    // 1語にするかどうか
-    let finalResult = oneWord ? resultA + resultB : resultA + ' ' + resultB;
-
-    // 15文字以上の場合の注意書き
-    if (finalResult.length > 15) {
-        document.getElementById('warning').textContent = '「一語にする」をオフにすることを推奨します。';
-    } else {
-        document.getElementById('warning').textContent = '';
+    if (generatedWord.length > 15) {
+        warningMessage = "「一語にする」をオフにすることを推奨します。";
     }
 
     // 結果を表示
-    document.getElementById('result').textContent = finalResult;
+    const resultDiv = document.getElementById('result');
+    const warningDiv = document.getElementById('warning');
+    resultDiv.textContent = "生成された単語: " + generatedWord;
+    warningDiv.textContent = warningMessage;
 }
 
-// クリアボタンの処理
 function clearInput() {
     document.getElementById('wordA').value = '';
     document.getElementById('wordB').value = '';
     document.getElementById('result').textContent = '';
     document.getElementById('warning').textContent = '';
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    // イベントリスナー
-    document.getElementById('generate').addEventListener('click', processInput);
-    document.getElementById('clear').addEventListener('click', clearInput);
-});
