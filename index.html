@@ -1,61 +1,42 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>アルタル語複合名詞作成機</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    label, input, select, textarea, button {
-      display: block;
-      margin-bottom: 10px;
-    }
-    textarea {
-      width: 100%;
-      height: 80px;
-    }
-    .output {
-      margin-top: 20px;
-      white-space: pre-wrap;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アルタル語複合名詞作成機</title>
 </head>
 <body>
-  <h1>アルタル語複合名詞作成機</h1>
-  <p>名詞の場合は単数形・主格を、動詞・形容詞の場合は不定形を入力してください（=辞書に載っている形を入力してください）。</p>
-  <p>自動詞とは辞書形の語尾が-n, -an, -en、他動詞とは辞書形の語尾が-l, -al, elのものです。</p>
-  
-  <label for="wordA">単語A:</label>
-  <textarea id="wordA"></textarea>
+    <h1>アルタル語複合名詞作成機</h1>
+    <p>名詞の場合は単数形・主格を、動詞・形容詞の場合は不定形を入力してください（=辞書に載っている形を入力してください）。</p>
+    <p>自動詞とは辞書形の語尾が-n, -an, -en、他動詞とは辞書形の語尾が-l, -al, elのものです。</p>
 
-  <label for="wordB">単語B:</label>
-  <textarea id="wordB"></textarea>
+    <label for="wordA">単語A:</label>
+    <input id="wordA" type="text" placeholder="単語A" style="white-space: pre-wrap;">
+    <br>
+    <label for="wordB">単語B:</label>
+    <input id="wordB" type="text" placeholder="単語B" style="white-space: pre-wrap;">
+    <br>
+    <label for="type">組み合わせの種類:</label>
+    <select id="type">
+        <option value="noun+noun">名詞+名詞</option>
+        <option value="adj/auto+noun">形容詞/自動詞分詞+名詞</option>
+        <option value="trans+noun">他動詞分詞+名詞</option>
+    </select>
+    <br>
+    <label for="aspect">相:</label>
+    <select id="aspect">
+        <option value="incomplete">未完了相</option>
+        <option value="complete">完了相</option>
+    </select>
+    <br>
+    <input type="checkbox" id="plural">複数形
+    <input type="checkbox" id="oneWord">1語にする
+    <br>
+    <button id="generate">生成</button>
+    <button id="clear">クリア</button>
+    <div id="result"></div>
+    <div id="warning"></div>
 
-  <label for="pattern">パターン選択:</label>
-  <select id="pattern">
-    <option value="noun+noun">名詞+名詞</option>
-    <option value="adj+verb+noun">形容詞/自動詞分詞+名詞</option>
-    <option value="transitive+participle+noun">他動詞分詞+名詞</option>
-  </select>
-
-  <label for="aspect">相選択:</label>
-  <select id="aspect">
-    <option value="imperfective">未完了相</option>
-    <option value="perfective">完了相</option>
-  </select>
-
-  <label><input type="checkbox" id="plural"> 複数形</label>
-  <label><input type="checkbox" id="combine"> 1語にする</label>
-
-  <button onclick="generateCompoundWord()">生成</button>
-  <button onclick="clearFields()">クリア</button>
-
-  <div class="output" id="output"></div>
-  <div class="output" id="suggestion"></div>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
