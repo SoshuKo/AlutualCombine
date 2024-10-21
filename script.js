@@ -136,6 +136,8 @@ function clearInput() {
     document.getElementById('warning').textContent = '';
 }
 
-// イベントリスナー
-document.getElementById('generate').addEventListener('click', processInput);
-document.getElementById('clear').addEventListener('click', clearInput);
+document.addEventListener('DOMContentLoaded', function() {
+    // イベントリスナー
+    document.getElementById('generate').addEventListener('click', processInput);
+    document.getElementById('clear').addEventListener('click', clearInput);
+});
